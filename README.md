@@ -1,2 +1,2 @@
-# ontology
-an ontology of places, creatures, artifacts, and happenings
+# The Kosmion Ontology
+places, creatures, artifacts, and happenings
