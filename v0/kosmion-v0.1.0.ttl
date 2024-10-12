@@ -1,0 +1,91 @@
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix kosm: <https://kosmion.github.io/ont/v0/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix gufo: <http://purl.org/nemo/gufo#> .
+
+# Ontology metadata
+<https://kosmion.github.io/ont/v0/kosmion-v0.ttl> a owl:Ontology ;
+    rdfs:label "Kosmion ontology" ;
+    rdfs:comment "A foundational ontology for modeling relators, relationships, and temporal aspects." ;
+    owl:versionInfo "v0.1" ;
+    owl:versionIRI <https://kosmion.github.io/ont/v0/kosmion-v0.1.0.ttl> ;
+    owl:imports <http://www.w3.org/2002/07/owl#> .
+
+# Define the relator class
+kosm:relator a owl:Class ;
+    rdfs:label "relator" ;
+    rdfs:comment "A class representing relators, which describe relationships (including unary relationships) among entities." .
+
+# Define the context class
+kosm:context a owl:Class ;
+    rdfs:label "context" ;
+    rdfs:comment "A class representing the applicable reality for the relationship represented by a relator." .
+
+# Define the facet class, similar to gUFO Type
+kosm:facet a owl:Class ;
+    rdfs:label "facet" ;
+    rdfs:comment "A class representing facets, providing different characteristics or dimensions of an entity." .
+# Define the facet-stereotype class
+kosm:facet-stereotype a owl:Class ;
+    rdfs:label "facet stereotype" ;
+    rdfs:comment "A class representing different stereotypes or categories of facets." .
+
+# Define category as an instance of facet-stereotype
+kosm:category a kosm:facet-stereotype ;
+    rdfs:subClassOf kosm:facet-stereotype ;
+    rdfs:label "category" ;
+    rdfs:comment "A category facet stereotype, used to classify different facets into categories. It serves both as an instance and a subclass of facet-stereotype to support meta-level categorization." .
+
+# Define datatype-relation property
+kosm:datatype-relation a owl:DatatypeProperty ;
+    rdfs:domain kosm:relator ;
+    rdfs:label "datatype relation" ;
+    rdfs:comment "A super-property for capturing datatype relations described by a relator." .
+
+# Define object-relation property as a super-property for relationships described by a relator
+kosm:object-relation a owl:ObjectProperty ;
+    rdfs:domain kosm:relator ;
+    rdfs:label "object relation" ;
+    rdfs:comment "A super-property for capturing object relations involved in relationships described by a relator." .
+
+# Define relator-genesis property
+kosm:relator-genesis a owl:DatatypeProperty ;
+    rdfs:domain kosm:relator ;
+    rdfs:range xsd:dateTimeStamp ;
+    rdfs:label "relator genesis" ;
+    rdfs:comment "The timestamp when the relator was created." .
+
+# Define relator-successor property
+kosm:relator-successor a owl:ObjectProperty ;
+    rdfs:domain kosm:relator ;
+    rdfs:range kosm:relator ;
+    rdfs:label "relator successor" ;
+    rdfs:comment "A property linking a relator to its successor, indicating that the relator has been superseded." .
+
+# Define relator-tombstone property
+kosm:relator-tombstone a owl:DatatypeProperty ;
+    rdfs:domain kosm:relator ;
+    rdfs:range xsd:dateTimeStamp ;
+    rdfs:label "relator tombstone" ;
+    rdfs:comment "The timestamp when the relator became invalid or ended." .
+
+# Define SHACL constraints
+kosm:relator-shape a sh:NodeShape ;
+    sh:targetClass kosm:relator ;
+    sh:property [
+        sh:path kosm:relator-genesis ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:dateTimeStamp
+    ] ;
+    sh:property [
+        sh:path kosm:relator-tombstone ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:dateTimeStamp
+    ] ;
+    sh:property [
+        sh:path kosm:object-relation ;
+        sh:minCount 1
+    ] .
