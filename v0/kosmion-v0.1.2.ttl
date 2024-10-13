@@ -1,0 +1,110 @@
+
+@prefix : <https://kosmion.github.io/ont/v0/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+
+# Ontology metadata
+<https://kosmion.github.io/ont/v0/kosmion-v0.ttl> a owl:Ontology ;
+    rdfs:label "Kosmion ontology" ;
+    rdfs:comment """
+    
+    The Kosmion ontology is designed with a human-first philosophy and a domain-first orientation that allows data modelers to define their own top-level constructs and hierarchies rather than adopting a predefined universal structure (aka, upper ontology). 
+    
+    Kosmion is intended to be a utilitarian foundational ontology, advocating for “relator instances” as a reification-like alternative to traditional properties/relations. This approach allows:
+    
+      - relevant facets instead of instantiating traditional classes.
+      - n-ary relations, including unary relations
+      - system-time (with kosm:relator-genesis, kosm:relator-tombstone, and kosm:relator-successor)
+      - immutability and attribution for lineage, auditing, and time-travel purposes
+      - “statements about relators”, and since any traditional RDF statement can be expressed with a relator (I think), it could be considered an alternative to RDF-star, which aims to support “statements about statements”
+      - contexts for specifying alternate realities and other less-truthy perspectives
+
+    Kosmion is “OWL2 Full”, which supposedly might mean it's undecideable and unreasonable. It's also unorthodox, so probably breaks a lot of tooling. Tough luck computers.
+    
+    Arguably, relators are also less readable and more complicated that classic RDF triples. Sorry about that, humans. At least the expressiveness is decent.
+    
+    Whereas gUFO uses punning to address the limitations around owl:Classes acting as individuals and properties, Kosmion has no such need because punning is a bad joke best left to robotic interpreters.
+""" ;
+    owl:versionInfo "v0.1.2" ;
+    owl:versionIRI <https://kosmion.github.io/ont/v0/kosmion-v0.1.2.ttl> ;
+    owl:imports <http://www.w3.org/2002/07/owl#> .
+
+# Define the relator class
+:relator a owl:Class ;
+    rdfs:label "relator" ;
+    rdfs:comment "@chatgp4o: A class representing relators, which describe relationships (including unary relationships) among entities." .
+
+# Define the context class
+:context a owl:Class ;
+    rdfs:label "context" ;
+    rdfs:comment "@chatgp4o: A class representing the applicable reality for the relationship represented by a relator." .
+
+# Define the facet class, similar to gUFO Type
+:facet a owl:Class ;
+    rdfs:label "facet" ;
+    rdfs:comment "@chatgp4o: A class representing facets, providing different characteristics or dimensions of an entity." .
+
+# Define the facet-stereotype class
+:facet-stereotype a owl:Class ;
+    rdfs:label "facet stereotype" ;
+    rdfs:comment "@chatgp4o: A class representing different stereotypes or categories of facets." .
+
+# Define category as an instance of facet-stereotype
+:category a :facet-stereotype ;
+    rdfs:subClassOf :facet-stereotype ;
+    rdfs:label "category" ;
+    rdfs:comment "@chatgp4o: A category facet stereotype, used to classify different facets into categories. It serves both as an instance and a subclass of facet-stereotype to support meta-level categorization." .
+
+# Define datatype-relation property
+:datatype-relation a owl:DatatypeProperty ;
+    rdfs:domain :relator ;
+    rdfs:label "datatype relation" ;
+    rdfs:comment "@chatgp4o: A super-property for capturing datatype relations described by a relator." .
+
+# Define object-relation property as a super-property for relationships described by a relator
+:object-relation a owl:ObjectProperty ;
+    rdfs:domain :relator ;
+    rdfs:label "object relation" ;
+    rdfs:comment "@chatgp4o: A super-property for capturing object relations involved in relationships described by a relator." .
+
+# Define relator-genesis property
+:relator-genesis a owl:DatatypeProperty ;
+    rdfs:domain :relator ;
+    rdfs:range xsd:dateTimeStamp ;
+    rdfs:label "relator genesis" ;
+    rdfs:comment "@chatgp4o: The timestamp when the relator was created." .
+
+# Define relator-successor property
+:relator-successor a owl:ObjectProperty ;
+    rdfs:domain :relator ;
+    rdfs:range :relator ;
+    rdfs:label "relator successor" ;
+    rdfs:comment "@chatgp4o: A property linking a relator to its successor, indicating that the relator has been superseded." .
+
+# Define relator-tombstone property
+:relator-tombstone a owl:DatatypeProperty ;
+    rdfs:domain :relator ;
+    rdfs:range xsd:dateTimeStamp ;
+    rdfs:label "relator tombstone" ;
+    rdfs:comment "@chatgp4o: The timestamp when the relator became invalid or ended." .
+
+# Define SHACL constraints
+:relator-shape a sh:NodeShape ;
+    sh:targetClass :relator ;
+    sh:property [
+        sh:path :relator-genesis ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:dateTimeStamp
+    ] ;
+    sh:property [
+        sh:path :relator-tombstone ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:dateTimeStamp
+    ] ;
+    sh:property [
+        sh:path :object-relation ;
+        sh:minCount 1
+    ] .
